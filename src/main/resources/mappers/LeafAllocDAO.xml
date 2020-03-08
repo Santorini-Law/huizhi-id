@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhihui.id.dao.LeafAllocDAO">
+
+    <resultMap id="LeafAllocMap" type="com.zhihui.id.entity.LeafAlloc">
+        <result property="bizTag" column="biz_tag"/>
+        <result property="maxId" column="max_id"/>
+        <result property="step" column="step"/>
+        <result property="remark" column="remark"/>
+        <result property="updateTime" column="update_time" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="getAllLeafAllocs" resultMap="LeafAllocMap">
+        SELECT biz_tag, max_id, step, update_time
+        FROM leaf_alloc
+    </select>
+
+    <select id="getLeafAlloc" resultMap="LeafAllocMap">
+        SELECT biz_tag, max_id, step
+        FROM leaf_alloc
+        WHERE biz_tag = #{tag}
+    </select>
+    <update id="updateMaxIdAndGetLeafAlloc">
+        UPDATE leaf_alloc
+        SET max_id = max_id + step
+        WHERE biz_tag = #{tag}
+    </update>
+
+    <update id="updateMaxIdByCustomStepAndGetLeafAlloc">
+        UPDATE leaf_alloc
+        SET max_id = max_id + #{step}
+        WHERE biz_tag = #{bizTag}
+    </update>
+
+    <select id="getAllTags" resultType="java.lang.String">
+        SELECT biz_tag
+        FROM leaf_alloc
+    </select>
+
+</mapper>
