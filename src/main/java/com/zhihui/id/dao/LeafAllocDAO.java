@@ -16,34 +16,40 @@ import java.util.List;
 public interface LeafAllocDAO {
 
     /**
-     * @return
+     * 获取所有分配规则
+     *
+     * @return 所有分配规则
      */
-    List<LeafAlloc> getAllLeafAllocs();
+    List<LeafAlloc> getAllLeafAllocList();
 
     /**
+     * 根据业务标签获取分配规则
      *
-     * @param tag
-     * @return
+     * @param tag 业务标签
+     * @return 分配规则
      */
     LeafAlloc getLeafAlloc(@Param("tag") String tag);
 
     /**
+     * 按步长更新 max id
      *
-     * @param tag
-     * @return
+     * @param tag 业务标签
+     * @return 更新个数
      */
-    int updateMaxIdAndGetLeafAlloc(@Param("tag") String tag);
+    int updateMaxIdByTag(@Param("tag") String tag);
 
     /**
+     * 按步长更新 max id
      *
-     * @param leafAlloc
-     * @return
+     * @param leafAlloc 分配规则
+     * @return 更新个数
      */
-    int updateMaxIdByCustomStepAndGetLeafAlloc(LeafAlloc leafAlloc);
+    int updateMaxIdByLeafAlloc(LeafAlloc leafAlloc);
 
     /**
+     * 获取所有业务标签
      *
-     * @return
+     * @return 业务标签
      */
     List<String> getAllTags();
 

@@ -10,7 +10,7 @@
         <result property="updateTime" column="update_time" jdbcType="DATE"/>
     </resultMap>
 
-    <select id="getAllLeafAllocs" resultMap="LeafAllocMap">
+    <select id="getAllLeafAllocList" resultMap="LeafAllocMap">
         SELECT biz_tag, max_id, step, update_time
         FROM leaf_alloc
     </select>
@@ -20,13 +20,13 @@
         FROM leaf_alloc
         WHERE biz_tag = #{tag}
     </select>
-    <update id="updateMaxIdAndGetLeafAlloc">
+    <update id="updateMaxIdByTag">
         UPDATE leaf_alloc
         SET max_id = max_id + step
         WHERE biz_tag = #{tag}
     </update>
 
-    <update id="updateMaxIdByCustomStepAndGetLeafAlloc">
+    <update id="updateMaxIdByLeafAlloc">
         UPDATE leaf_alloc
         SET max_id = max_id + #{step}
         WHERE biz_tag = #{bizTag}

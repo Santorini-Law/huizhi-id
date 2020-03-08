@@ -156,12 +156,12 @@ public class SegmentIDGenImpl implements IDGen {
         SegmentBuffer buffer = segment.getBuffer();
         LeafAlloc leafAlloc;
         if (!buffer.isInitOk()) {
-            leafAllocDAO.updateMaxIdAndGetLeafAlloc(key);
+            leafAllocDAO.updateMaxIdByTag(key);
             leafAlloc = leafAllocDAO.getLeafAlloc(key);
             buffer.setStep(leafAlloc.getStep());
             buffer.setMinStep(leafAlloc.getStep());//leafAlloc中的step为DB中的step
         } else if (buffer.getUpdateTimestamp() == 0) {
-            leafAllocDAO.updateMaxIdAndGetLeafAlloc(key);
+            leafAllocDAO.updateMaxIdByTag(key);
             leafAlloc = leafAllocDAO.getLeafAlloc(key);
             buffer.setUpdateTimestamp(System.currentTimeMillis());
             buffer.setStep(leafAlloc.getStep());
@@ -184,7 +184,7 @@ public class SegmentIDGenImpl implements IDGen {
             LeafAlloc temp = new LeafAlloc();
             temp.setBizTag(key);
             temp.setStep(nextStep);
-            leafAllocDAO.updateMaxIdByCustomStepAndGetLeafAlloc(temp);
+            leafAllocDAO.updateMaxIdByLeafAlloc(temp);
             leafAlloc = leafAllocDAO.getLeafAlloc(key);
             buffer.setUpdateTimestamp(System.currentTimeMillis());
             buffer.setStep(nextStep);
@@ -273,7 +273,7 @@ public class SegmentIDGenImpl implements IDGen {
     }
 
     public List<LeafAlloc> getAllLeafAllocs() {
-        return leafAllocDAO.getAllLeafAllocs();
+        return leafAllocDAO.getAllLeafAllocList();
     }
 
     public Map<String, SegmentBuffer> getCache() {
