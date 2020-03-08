@@ -3,7 +3,6 @@ package com.zhihui.id.entity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * leaf alloc
@@ -17,5 +16,5 @@ public class LeafAlloc {
     private Long maxId;
     private Integer step;
     private String remark;
-    private Date updateTime;
+    private LocalDateTime updateTime;
 }
