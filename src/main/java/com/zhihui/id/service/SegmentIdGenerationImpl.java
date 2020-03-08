@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -125,7 +126,7 @@ public class SegmentIdGenerationImpl implements IdGeneration {
                 cache.put(tag, buffer);
                 log.info("Add tag {} from db to IdCache, SegmentBuffer {}", tag, buffer);
             }
-            //cache中已失效的tags从cache删除
+            // cache中已失效的tags从cache删除
             removeTags.removeAll(dbTags);
             for (String tag : removeTags) {
                 cache.remove(tag);
@@ -139,6 +140,7 @@ public class SegmentIdGenerationImpl implements IdGeneration {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result get(final String key) {
         if (!initOK) {
             return new Result(EXCEPTION_ID_ID_CACHE_INIT_FALSE, Status.EXCEPTION);
@@ -150,7 +152,7 @@ public class SegmentIdGenerationImpl implements IdGeneration {
                     if (!buffer.isInitOk()) {
                         try {
                             updateSegmentFromDb(key, buffer.getCurrent());
-                            log.info("Init buffer. Update leafkey {} {} from db", key, buffer.getCurrent());
+                            log.info("Init buffer. Update leaf key {} {} from db", key, buffer.getCurrent());
                             buffer.setInitOk(true);
                         } catch (Exception e) {
                             log.warn("Init buffer {} exception", buffer.getCurrent(), e);
@@ -163,44 +165,57 @@ public class SegmentIdGenerationImpl implements IdGeneration {
         return new Result(EXCEPTION_ID_KEY_NOT_EXISTS, Status.EXCEPTION);
     }
 
+
+    private LeafAlloc updateMaxIdAndGetLeafAlloc(String tag) {
+        leafAllocDAO.updateMaxIdByTag(tag);
+        return leafAllocDAO.getLeafAlloc(tag);
+    }
+
+    private LeafAlloc updateMaxIdAndGetLeafAlloc(LeafAlloc leafAlloc) {
+        leafAllocDAO.updateMaxIdByLeafAlloc(leafAlloc);
+        return leafAllocDAO.getLeafAlloc(leafAlloc.getBizTag());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     public void updateSegmentFromDb(String key, Segment segment) {
         StopWatch sw = new Slf4JStopWatch();
         SegmentBuffer buffer = segment.getBuffer();
         LeafAlloc leafAlloc;
         if (!buffer.isInitOk()) {
-            leafAllocDAO.updateMaxIdByTag(key);
-            leafAlloc = leafAllocDAO.getLeafAlloc(key);
+            leafAlloc = updateMaxIdAndGetLeafAlloc(key);
             buffer.setStep(leafAlloc.getStep());
-            buffer.setMinStep(leafAlloc.getStep());//leafAlloc中的step为DB中的step
+            // leafAlloc中的step为DB中的step
+            buffer.setMinStep(leafAlloc.getStep());
         } else if (buffer.getUpdateTimestamp() == 0) {
-            leafAllocDAO.updateMaxIdByTag(key);
-            leafAlloc = leafAllocDAO.getLeafAlloc(key);
+            leafAlloc = updateMaxIdAndGetLeafAlloc(key);
             buffer.setUpdateTimestamp(System.currentTimeMillis());
             buffer.setStep(leafAlloc.getStep());
-            buffer.setMinStep(leafAlloc.getStep());//leafAlloc中的step为DB中的step
+            // leafAlloc中的step为DB中的step
+            buffer.setMinStep(leafAlloc.getStep());
         } else {
             long duration = System.currentTimeMillis() - buffer.getUpdateTimestamp();
             int nextStep = buffer.getStep();
             if (duration < SEGMENT_DURATION) {
+                // 一个Segment之内
                 if (nextStep * 2 > MAX_STEP) {
                     //do nothing
                 } else {
                     nextStep = nextStep * 2;
                 }
             } else if (duration < SEGMENT_DURATION * 2) {
-                //do nothing with nextStep
+                // do nothing with nextStep
             } else {
                 nextStep = nextStep / 2 >= buffer.getMinStep() ? nextStep / 2 : nextStep;
             }
-            log.info("leafKey[{}], step[{}], duration[{}mins], nextStep[{}]", key, buffer.getStep(), String.format("%.2f", ((double) duration / (1000 * 60))), nextStep);
+            log.info("leafKey[{}], step[{}], duration[{} min], nextStep[{}]", key, buffer.getStep(), String.format("%.2f", ((double) duration / (1000 * 60))), nextStep);
             LeafAlloc temp = new LeafAlloc();
             temp.setBizTag(key);
             temp.setStep(nextStep);
-            leafAllocDAO.updateMaxIdByLeafAlloc(temp);
-            leafAlloc = leafAllocDAO.getLeafAlloc(key);
+            leafAlloc = updateMaxIdAndGetLeafAlloc(temp);
             buffer.setUpdateTimestamp(System.currentTimeMillis());
             buffer.setStep(nextStep);
-            buffer.setMinStep(leafAlloc.getStep());//leafAlloc的step为DB中的step
+            // leafAlloc的step为DB中的step
+            buffer.setMinStep(leafAlloc.getStep());
         }
         // must set value before set max
         long value = leafAlloc.getMaxId() - buffer.getStep();
@@ -210,7 +225,7 @@ public class SegmentIdGenerationImpl implements IdGeneration {
         sw.stop("updateSegmentFromDb", key + " " + segment);
     }
 
-    public Result getIdFromSegmentBuffer(final SegmentBuffer buffer) {
+    private Result getIdFromSegmentBuffer(final SegmentBuffer buffer) {
 
         while (true) {
             buffer.rLock().lock();
