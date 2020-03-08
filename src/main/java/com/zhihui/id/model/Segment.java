@@ -1,46 +1,48 @@
 package com.zhihui.id.model;
 
+import lombok.Data;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 
+/**
+ * segment
+ *
+ * @author LDZ
+ * @date 2020-03-08 22:26
+ */
+@Data
 public class Segment {
+
+    /**
+     *
+     */
     private AtomicLong value = new AtomicLong(0);
+
+    /**
+     * max
+     */
     private volatile long max;
+
+    /**
+     * 步长
+     */
     private volatile int step;
+
+    /**
+     *
+     */
     private SegmentBuffer buffer;
 
-    public Segment(SegmentBuffer buffer) {
+    Segment(SegmentBuffer buffer) {
         this.buffer = buffer;
     }
 
-    public AtomicLong getValue() {
-        return value;
-    }
-
-    public void setValue(AtomicLong value) {
-        this.value = value;
-    }
-
-    public long getMax() {
-        return max;
-    }
-
-    public void setMax(long max) {
-        this.max = max;
-    }
-
-    public int getStep() {
-        return step;
-    }
-
-    public void setStep(int step) {
-        this.step = step;
-    }
-
-    public SegmentBuffer getBuffer() {
-        return buffer;
-    }
-
+    /**
+     * 获取空当
+     *
+     * @return max 和当前值的差
+     */
     public long getIdle() {
         return this.getMax() - getValue().get();
     }

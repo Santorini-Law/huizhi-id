@@ -1,4 +1,4 @@
-package com.zhihui.id.config;
+package com.zhihui.id.config.thread;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @Configuration
 public class ThreadPoolConfig {
-    @Bean(initMethod = "initialize", destroyMethod = "shutdown")
+
+
+    @Bean(name = "default", initMethod = "initialize", destroyMethod = "shutdown")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(20);

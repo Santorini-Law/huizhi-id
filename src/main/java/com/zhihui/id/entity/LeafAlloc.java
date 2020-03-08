@@ -12,9 +12,29 @@ import java.time.LocalDateTime;
  */
 @Data
 public class LeafAlloc {
+
+    /**
+     * 业务标签
+     */
     private String bizTag;
+
+    /**
+     * max id
+     */
     private Long maxId;
+
+    /**
+     * 步长
+     */
     private Integer step;
+
+    /**
+     * 备注
+     */
     private String remark;
+
+    /**
+     * 更新时间
+     */
     private LocalDateTime updateTime;
 }

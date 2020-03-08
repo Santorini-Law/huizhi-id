@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 /**
+ * 链接池
+ *
  * @author LDZ
  * @date 2020-03-08 10:42
  */
