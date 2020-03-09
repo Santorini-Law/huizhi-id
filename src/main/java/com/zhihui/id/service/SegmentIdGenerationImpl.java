@@ -166,16 +166,6 @@ public class SegmentIdGenerationImpl implements IdGeneration {
     }
 
 
-    private LeafAlloc updateMaxIdAndGetLeafAlloc(String tag) {
-        leafAllocDAO.updateMaxIdByTag(tag);
-        return leafAllocDAO.getLeafAlloc(tag);
-    }
-
-    private LeafAlloc updateMaxIdAndGetLeafAlloc(LeafAlloc leafAlloc) {
-        leafAllocDAO.updateMaxIdByLeafAlloc(leafAlloc);
-        return leafAllocDAO.getLeafAlloc(leafAlloc.getBizTag());
-    }
-
     @Transactional(rollbackFor = Exception.class)
     public void updateSegmentFromDb(String key, Segment segment) {
         StopWatch sw = new Slf4JStopWatch();
@@ -303,6 +293,18 @@ public class SegmentIdGenerationImpl implements IdGeneration {
 
     public Map<String, SegmentBuffer> getCache() {
         return cache;
+    }
+
+    // ============================== private ==============================
+
+    private LeafAlloc updateMaxIdAndGetLeafAlloc(String tag) {
+        leafAllocDAO.updateMaxIdByTag(tag);
+        return leafAllocDAO.getLeafAlloc(tag);
+    }
+
+    private LeafAlloc updateMaxIdAndGetLeafAlloc(LeafAlloc leafAlloc) {
+        leafAllocDAO.updateMaxIdByLeafAlloc(leafAlloc);
+        return leafAllocDAO.getLeafAlloc(leafAlloc.getBizTag());
     }
 
 }
