@@ -44,7 +44,7 @@ public class OrderIdGenerationImpl implements IOrderIdGeneration {
 
     @Override
     public Long generateSubOrderId(Long uid, Integer businessCode) {
-        Result result = idGeneration.get("ORDER_ID");
+        Result result = idGeneration.get("SUB_ORDER_ID");
         if (!result.getStatus().equals(Status.SUCCESS) || result.getId() <= 0L) {
             log.error("生成子订单id异常 result = {}", result.toString());
             throw new RuntimeException("id生成服务异常");
