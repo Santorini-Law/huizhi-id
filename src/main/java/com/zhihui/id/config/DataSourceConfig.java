@@ -18,7 +18,7 @@ public class DataSourceConfig {
 
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.druid")
+    @ConfigurationProperties(prefix = "spring.datasource.other")
     public DataSource mySqlDataSource() {
         return DruidDataSourceBuilder.create().build();
     }

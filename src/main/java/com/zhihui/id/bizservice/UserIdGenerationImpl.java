@@ -5,11 +5,9 @@ import com.zhihui.id.enums.Status;
 import com.zhihui.id.model.Result;
 import com.zhihui.id.service.api.IdGeneration;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.security.MessageDigest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,7 +79,6 @@ public class UserIdGenerationImpl implements IUserIdGeneration {
     }
 
     public static void main(String[] args) {
-        System.out.println(629615002000507040L);
         System.out.println(Long.MAX_VALUE);
     }
 }

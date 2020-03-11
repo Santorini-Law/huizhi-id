@@ -9,5 +9,11 @@ import com.huizhi.rpc.model.IdGenerationResponseDTO;
  */
 public interface RpcIdGenerationService {
 
+    /**
+     * 生成uid
+     *
+     * @param idGenerationRequestDTO uid 生成请求
+     * @return uid
+     */
     IdGenerationResponseDTO generateUid(IdGenerationRequestDTO idGenerationRequestDTO);
 }

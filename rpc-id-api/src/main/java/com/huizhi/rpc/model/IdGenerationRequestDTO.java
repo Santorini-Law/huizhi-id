@@ -11,4 +11,9 @@ import java.io.Serializable;
 @Data
 public class IdGenerationRequestDTO implements Serializable {
 
+    /**
+     * 手机号
+     */
+    private String mobile;
+
 }
